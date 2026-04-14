@@ -1,0 +1,99 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
+/* We don't have a specific container-queries import for v4 yet but we'll stick to basics */
+
+@theme {
+  --color-secondary: #556158;
+  --color-on-primary-fixed: #002114;
+  --color-surface-container-low: #f3f3f4;
+  --color-surface-container: #eeeeee;
+  --color-outline-variant: #bec9c1;
+  --color-on-tertiary-fixed-variant: #6f3800;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-high: #e8e8e8;
+  --color-inverse-on-surface: #f0f1f1;
+  --color-on-primary-fixed-variant: #005138;
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface: #f9f9f9;
+  --color-surface-tint: #006c4c;
+  --color-primary-container: #1e7f5c;
+  --color-tertiary: #85480c;
+  --color-tertiary-container: #a35f24;
+  --color-surface-variant: #e2e2e2;
+  --color-on-secondary-fixed: #131e17;
+  --color-on-primary: #ffffff;
+  --color-on-tertiary: #ffffff;
+  --color-on-secondary: #ffffff;
+  --color-inverse-primary: #7ed8af;
+  --color-secondary-fixed: #d9e6da;
+  --color-on-secondary-fixed-variant: #3e4a41;
+  --color-background: #f9f9f9;
+  --color-on-primary-container: #d5ffe7;
+  --color-on-error-container: #93000a;
+  --color-primary: #006546;
+  --color-tertiary-fixed: #ffdcc4;
+  --color-on-surface-variant: #3e4943;
+  --color-on-error: #ffffff;
+  --color-surface-bright: #f9f9f9;
+  --color-primary-fixed: #9af5ca;
+  --color-inverse-surface: #2f3131;
+  --color-on-tertiary-container: #fff2eb;
+  --color-tertiary-fixed-dim: #ffb780;
+  --color-on-surface: #1a1c1c;
+  --color-error-container: #ffdad6;
+  --color-secondary-container: #d9e6da;
+  --color-on-background: #1a1c1c;
+  --color-primary-fixed-dim: #7ed8af;
+  --color-on-secondary-container: #5b675e;
+  --color-on-tertiary-fixed: #2f1400;
+  --color-surface-dim: #dadada;
+  --color-secondary-fixed-dim: #bdcabe;
+  --color-outline: #6e7a72;
+  --color-error: #ba1a1a;
+
+  --radius-default: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  --font-sans: var(--font-lexend), sans-serif;
+  --font-headline: var(--font-lexend), sans-serif;
+  --font-body: var(--font-lexend), sans-serif;
+  --font-label: var(--font-lexend), sans-serif;
+  --font-lexend: var(--font-lexend), sans-serif;
+}
+
+@layer base {
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  body {
+    min-height: max(884px, 100dvh);
+  }
+}
+
+@layer utilities {
+  .tonal-shift-bottom {
+    box-shadow: 0 12px 32px rgba(0, 101, 70, 0.08);
+  }
+
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
