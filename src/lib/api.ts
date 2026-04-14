@@ -1,5 +1,31 @@
 import { supabase } from "./supabase";
 
+// --- TYPES ---
+
+export interface MedicineRow {
+    id: string;
+    name: string;
+    price: string;
+    image: string;
+    category: string;
+    in_stock: boolean;
+    description: string;
+    usage: string;
+    side_effects: string;
+    created_at: string;
+}
+
+export interface OrderRow {
+    id: string;
+    customer_name: string;
+    phone: string;
+    location: string;
+    medicines: string[];
+    total_amount: string;
+    status: string;
+    created_at: string;
+}
+
 // --- MEDICINES ---
 
 export const getMedicines = async () => {
@@ -10,11 +36,12 @@ export const getMedicines = async () => {
 
     if (error) {
         console.warn("Supabase Fetch Warning (getMedicines):", error.message);
-        return []; // Return empty array to prevent build failure
+        return [];
     }
 
-    // Map snake_case to camelCase for the UI
-    return (data || []).map(item => ({
+    const rows = (data || []) as MedicineRow[];
+
+    return rows.map((item: MedicineRow) => ({
         id: item.id,
         name: item.name,
         price: item.price,
@@ -37,10 +64,12 @@ export const getMedicinesByCategory = async (category: string) => {
 
     if (error) {
         console.warn("Supabase Fetch Warning (getMedicinesByCategory):", error.message);
-        return []; // Return empty array to prevent build failure
+        return [];
     }
 
-    return (data || []).map(item => ({
+    const rows = (data || []) as MedicineRow[];
+
+    return rows.map((item: MedicineRow) => ({
         id: item.id,
         name: item.name,
         description: item.description,
@@ -62,17 +91,19 @@ export const getMedicineById = async (id: string) => {
         return null;
     }
 
+    const item = data as MedicineRow;
+
     return {
-        id: data.id,
-        name: data.name,
-        price: data.price,
-        image: data.image,
-        category: data.category,
-        inStock: data.in_stock,
-        description: data.description,
-        usage: data.usage,
-        sideEffects: data.side_effects,
-        createdAt: data.created_at
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        image: item.image,
+        category: item.category,
+        inStock: item.in_stock,
+        description: item.description,
+        usage: item.usage,
+        sideEffects: item.side_effects,
+        createdAt: item.created_at
     };
 };
 
@@ -100,7 +131,6 @@ export const addMedicine = async (medicine: any) => {
 };
 
 export const updateMedicine = async (id: string, updates: any) => {
-    // Map camcelCase updates to snake_case for DB
     const dbUpdates: any = {};
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.price !== undefined) dbUpdates.price = updates.price;
@@ -134,7 +164,7 @@ export const createOrder = async (orderData: any) => {
             customer_name: orderData.customerName,
             phone: orderData.phone,
             location: orderData.location,
-            medicines: orderData.medicines, // Assuming this is an array of strings/IDs
+            medicines: orderData.medicines,
             total_amount: orderData.total,
             status: "Pending"
         }])
@@ -156,10 +186,12 @@ export const getOrders = async () => {
 
     if (error) {
         console.error("Supabase Error (getOrders):", error);
-        throw error;
+        return [];
     }
 
-    return (data || []).map(item => ({
+    const rows = (data || []) as OrderRow[];
+
+    return rows.map((item: OrderRow) => ({
         id: item.id,
         customer: item.customer_name,
         phone: item.phone,
@@ -167,9 +199,10 @@ export const getOrders = async () => {
         medicines: item.medicines,
         total: item.total_amount,
         status: item.status,
-        time: item.created_at // You might want to format this
+        time: item.created_at
     }));
 };
+
 export const updateOrderStatus = async (id: string, status: string) => {
     const { data, error } = await supabase
         .from('orders')
