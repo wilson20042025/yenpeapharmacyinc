@@ -14,7 +14,7 @@ export const getMedicines = async () => {
     }
 
     // Map snake_case to camelCase for the UI
-    return data.map(item => ({
+    return (data || []).map(item => ({
         id: item.id,
         name: item.name,
         price: item.price,
@@ -40,7 +40,7 @@ export const getMedicinesByCategory = async (category: string) => {
         return []; // Return empty array to prevent build failure
     }
 
-    return data.map(item => ({
+    return (data || []).map(item => ({
         id: item.id,
         name: item.name,
         description: item.description,
@@ -57,8 +57,8 @@ export const getMedicineById = async (id: string) => {
         .eq('id', id)
         .single();
 
-    if (error) {
-        console.error("Supabase Error (getMedicineById):", error);
+    if (error || !data) {
+        console.error("Supabase Error (getMedicineById):", error || "No data found");
         return null;
     }
 
@@ -159,7 +159,7 @@ export const getOrders = async () => {
         throw error;
     }
 
-    return data.map(item => ({
+    return (data || []).map(item => ({
         id: item.id,
         customer: item.customer_name,
         phone: item.phone,
@@ -169,4 +169,18 @@ export const getOrders = async () => {
         status: item.status,
         time: item.created_at // You might want to format this
     }));
+};
+export const updateOrderStatus = async (id: string, status: string) => {
+    const { data, error } = await supabase
+        .from('orders')
+        .update({ status })
+        .eq('id', id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Supabase Error (updateOrderStatus):", error);
+        throw error;
+    }
+    return data;
 };
