@@ -21,7 +21,7 @@ const TopAppBar: React.FC = () => {
                 </nav>
 
                 <div className="flex items-center gap-4">
-                    <a href="tel:+231889143013" className="bg-primary/10 text-primary font-black px-6 py-3 rounded-2xl active:scale-95 transition-all flex items-center gap-2 text-sm uppercase tracking-wider">
+                    <a href="tel:0773678742" className="bg-primary/10 text-primary font-black px-6 py-3 rounded-2xl active:scale-95 transition-all flex items-center gap-2 text-sm uppercase tracking-wider">
                         <span className="material-symbols-outlined text-lg">call</span>
                         <span className="hidden sm:inline">Emergency Help</span>
                         <span className="sm:hidden">Call</span>

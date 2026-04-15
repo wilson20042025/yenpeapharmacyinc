@@ -1,64 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { usePathname } from 'next/navigation';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
-    const [session, setSession] = useState<any>(null);
 
-    useEffect(() => {
-        // Initial session check
-        const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setSession(session);
-            
-            if (!session && pathname !== '/admin/login') {
-                router.push('/admin/login');
-            } else {
-                setIsLoading(false);
-            }
-        };
-
-        checkSession();
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-            if (!session && pathname !== '/admin/login') {
-                router.push('/admin/login');
-            }
-            if (session && pathname === '/admin/login') {
-                router.push('/admin');
-            }
-            setIsLoading(false);
-        });
-
-        return () => subscription.unsubscribe();
-    }, [pathname, router]);
-
-    const handleSignOut = async () => {
-        await supabase.auth.signOut();
-        router.push('/admin/login');
+    const handleSignOut = () => {
+        // For now, just redirect
+        window.location.href = '/';
     };
 
     // Don't protect the login page from itself
     const isLoginPage = pathname === '/admin/login';
-
-    if (isLoading && !isLoginPage) {
-        return (
-            <div className="min-h-screen bg-[#f0f4f1] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-10 h-10 border-4 border-[#006546]/20 border-t-[#006546] rounded-full animate-spin"></div>
-                    <span className="text-[#006546]/60 font-bold text-xs uppercase tracking-widest">Verifying Admin...</span>
-                </div>
-            </div>
-        );
-    }
 
     // Header component
     const Header = () => (
@@ -69,14 +24,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <h1 className="font-lexend font-bold text-lg tracking-tight">Pharmacist Admin</h1>
                 </div>
                 <div className="flex items-center gap-3">
-                    {session && (
-                        <button 
-                            onClick={handleSignOut}
-                            className="text-[10px] uppercase font-bold tracking-widest bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 transition-all flex items-center gap-1.5"
-                        >
-                            Sign Out
-                        </button>
-                    )}
+                    <button 
+                        onClick={handleSignOut}
+                        className="text-[10px] uppercase font-bold tracking-widest bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 transition-all flex items-center gap-1.5"
+                    >
+                        Sign Out
+                    </button>
                     <Link href="/" className="text-[10px] uppercase font-bold tracking-widest bg-white/5 px-3 py-1.5 rounded-full hover:bg-white/20 transition-all border border-white/10">
                         Store
                     </Link>

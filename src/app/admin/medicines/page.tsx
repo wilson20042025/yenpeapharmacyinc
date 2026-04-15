@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { getMedicines, addMedicine, updateMedicine } from '@/lib/api';
 
 type Medicine = {
-    id: string; // Changed from number to string for Firestore IDs
+    _id: string;
     name: string;
     price: string;
     image: string;
@@ -57,15 +57,15 @@ export default function AdminMedicinesPage() {
         fetchMeds();
     }, []);
 
-    const toggleStock = async (id: string) => {
-        const med = medicines.find(m => m.id === id);
+    const toggleStock = async (_id: string) => {
+        const med = medicines.find(m => m._id === _id);
         if (!med) return;
 
         try {
-            await updateMedicine(id, { inStock: !med.inStock });
-            setMedicines(prev => prev.map(m => m.id === id ? { ...m, inStock: !med.inStock } : m));
+            await updateMedicine(_id, { inStock: !med.inStock });
+            setMedicines(prev => prev.map(m => m._id === _id ? { ...m, inStock: !med.inStock } : m));
         } catch (err) {
-            alert("Failed to update stock in Supabase");
+            console.error("Error updating stock:", err);
         }
     };
 
@@ -123,11 +123,11 @@ export default function AdminMedicinesPage() {
             };
 
             if (editingMed) {
-                await updateMedicine(editingMed.id, medicineData);
-                setMedicines(prev => prev.map(m => m.id === editingMed.id ? { ...m, ...medicineData } : m));
+                await updateMedicine(editingMed._id, medicineData);
+                setMedicines(prev => prev.map(m => m._id === editingMed._id ? { ...m, ...medicineData } : m));
             } else {
-                const docRef = await addMedicine(medicineData);
-                setMedicines([{ id: docRef.id, ...medicineData }, ...medicines]);
+                const newMed = await addMedicine(medicineData);
+                setMedicines([newMed, ...medicines]);
             }
 
             setIsSuccess(true);
@@ -284,7 +284,7 @@ export default function AdminMedicinesPage() {
 
             <div className="space-y-4">
                 {medicines.map((med) => (
-                    <div key={med.id} className="bg-white p-5 rounded-[2rem] border border-outline-variant/10 shadow-sm flex gap-4 items-center transition-all group">
+                    <div key={med._id} className="bg-white p-5 rounded-[2rem] border border-outline-variant/10 shadow-sm flex gap-4 items-center transition-all group">
                         <div className="w-20 h-20 rounded-2xl bg-surface-container overflow-hidden flex-shrink-0 border border-outline-variant/10">
                             <img src={med.image} alt={med.name} className="w-full h-full object-cover" />
                         </div>
@@ -296,7 +296,7 @@ export default function AdminMedicinesPage() {
                             <p className="text-sm font-black text-on-surface-variant opacity-60">L$ {med.price}</p>
                         </div>
                         <div className="flex flex-col items-end gap-3">
-                            <button onClick={() => toggleStock(med.id)} className={`relative w-11 h-6 rounded-full transition-colors duration-200 shadow-inner ${med.inStock ? 'bg-primary' : 'bg-surface-dim'}`}>
+                            <button onClick={() => toggleStock(med._id)} className={`relative w-11 h-6 rounded-full transition-colors duration-200 shadow-inner ${med.inStock ? 'bg-primary' : 'bg-surface-dim'}`}>
                                 <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 shadow-sm ${med.inStock ? 'translate-x-5' : 'translate-x-0'}`} />
                             </button>
                             <button onClick={() => openEdit(med)} className="w-10 h-10 bg-secondary-container text-primary rounded-xl flex items-center justify-center active:scale-95 transition-all">

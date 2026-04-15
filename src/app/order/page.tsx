@@ -3,8 +3,16 @@
 import React, { useState } from 'react';
 import SubPageHeader from '@/components/SubPageHeader';
 import Link from 'next/link';
+import { addOrder } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 export default function OrderPage() {
+    const [customerName, setCustomerName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [location, setLocation] = useState('');
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+
     const [medicines, setMedicines] = useState([
         {
             id: 1,
@@ -35,6 +43,34 @@ export default function OrderPage() {
     };
 
     const totalPrice = medicines.reduce((sum, med) => sum + (med.price * med.quantity), 0);
+
+    const handlePlaceOrder = async () => {
+        if (!customerName.trim() || !phone.trim() || !location.trim()) {
+            alert('Please fill in all customer information');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const orderData = {
+                customerName: customerName.trim(),
+                phone: phone.trim(),
+                location: location.trim(),
+                medicines: medicines.map(med => med.name),
+                totalAmount: totalPrice.toString(),
+                status: 'Pending'
+            };
+
+            await addOrder(orderData);
+            alert('Order placed successfully!');
+            router.push('/');
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Failed to place order. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="bg-surface text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen">
@@ -123,15 +159,36 @@ export default function OrderPage() {
                     <div className="space-y-4">
                         <div className="space-y-1.5">
                             <label className="block text-on-surface-variant text-sm font-medium ml-1">Name</label>
-                            <input className="w-full h-14 px-4 rounded-2xl bg-surface-container-low border-transparent focus:border-primary focus:ring-0 text-on-background placeholder:text-outline transition-all" placeholder="Your full name" type="text" />
+                            <input 
+                                className="w-full h-14 px-4 rounded-2xl bg-surface-container-low border-transparent focus:border-primary focus:ring-0 text-on-background placeholder:text-outline transition-all" 
+                                placeholder="Your full name" 
+                                type="text"
+                                value={customerName}
+                                onChange={(e) => setCustomerName(e.target.value)}
+                                required
+                            />
                         </div>
                         <div className="space-y-1.5">
                             <label className="block text-on-surface-variant text-sm font-medium ml-1">Phone Number</label>
-                            <input className="w-full h-14 px-4 rounded-2xl bg-surface-container-low border-transparent focus:border-primary focus:ring-0 text-on-background placeholder:text-outline transition-all" placeholder="077 / 088..." type="tel" />
+                            <input 
+                                className="w-full h-14 px-4 rounded-2xl bg-surface-container-low border-transparent focus:border-primary focus:ring-0 text-on-background placeholder:text-outline transition-all" 
+                                placeholder="077 / 088..." 
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                required
+                            />
                         </div>
                         <div className="space-y-1.5">
                             <label className="block text-on-surface-variant text-sm font-medium ml-1">Location</label>
-                            <textarea className="w-full p-4 rounded-2xl bg-surface-container-low border-transparent focus:border-primary focus:ring-0 text-on-background placeholder:text-outline transition-all resize-none" placeholder="e.g., Paynesville, near market" rows={2}></textarea>
+                            <textarea 
+                                className="w-full p-4 rounded-2xl bg-surface-container-low border-transparent focus:border-primary focus:ring-0 text-on-background placeholder:text-outline transition-all resize-none" 
+                                placeholder="e.g., Paynesville, near market" 
+                                rows={2}
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                required
+                            ></textarea>
                         </div>
                     </div>
                 </section>
@@ -184,11 +241,21 @@ export default function OrderPage() {
                             <p className="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">Secure Pharmacy Checkout</p>
                         </div>
                         <button 
-                            disabled={medicines.length === 0}
+                            onClick={handlePlaceOrder}
+                            disabled={medicines.length === 0 || loading}
                             className="w-full h-16 bg-primary text-on-primary font-lexend font-extrabold text-xl rounded-2xl shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
                         >
-                            Place Order (L$ {totalPrice})
-                            <span className="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                            {loading ? (
+                                <>
+                                    <div className="w-6 h-6 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin"></div>
+                                    Placing Order...
+                                </>
+                            ) : (
+                                <>
+                                    Place Order (L$ {totalPrice})
+                                    <span className="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>

@@ -6,14 +6,14 @@ import { getOrders, updateOrderStatus } from '@/lib/api';
 type OrderStatus = 'Pending' | 'Confirmed' | 'Ready' | 'Delivered';
 
 type Order = {
-    id: string;
-    customer: string;
+    _id: string;
+    customerName: string;
     phone: string;
     location: string;
     medicines: string[];
-    total: string;
+    totalAmount: string;
     status: OrderStatus;
-    time: string;
+    createdAt: string;
 };
 
 export default function AdminOrdersPage() {
@@ -38,8 +38,8 @@ export default function AdminOrdersPage() {
     const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
         try {
             await updateOrderStatus(orderId, newStatus);
-            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-            if (selectedOrder?.id === orderId) {
+            setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
+            if (selectedOrder?._id === orderId) {
                 setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
             }
         } catch (err) {
@@ -67,14 +67,14 @@ export default function AdminOrdersPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {orders.map((order) => (
                         <div 
-                            key={order.id} 
+                            key={order._id} 
                             onClick={() => setSelectedOrder(order)}
                             className="bg-surface-container-low p-6 rounded-[2rem] border border-outline-variant/10 shadow-sm space-y-4 hover:bg-surface-container-high transition-all cursor-pointer group"
                         >
                             <div className="flex justify-between items-start">
                                 <div className="space-y-1">
-                                    <span className="text-[10px] font-black uppercase text-primary tracking-widest">{order.id}</span>
-                                    <h2 className="text-lg font-black text-on-surface">{order.customer}</h2>
+                                    <span className="text-[10px] font-black uppercase text-primary tracking-widest">{order._id}</span>
+                                    <h2 className="text-lg font-black text-on-surface">{order.customerName}</h2>
                                 </div>
                                 <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${
                                     order.status === 'Pending' ? 'bg-error-container text-on-error-container' :
@@ -88,11 +88,11 @@ export default function AdminOrdersPage() {
 
                             <div className="flex items-center gap-2 text-on-surface-variant text-sm font-medium">
                                 <span className="material-symbols-outlined text-lg">schedule</span>
-                                <span>{order.time}</span>
+                                <span>{order.createdAt}</span>
                             </div>
 
                             <div className="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
-                                <span className="text-primary font-black text-xl">{order.total}</span>
+                                <span className="text-primary font-black text-xl">{order.totalAmount}</span>
                                 <div className="bg-primary text-on-primary p-2 rounded-xl group-hover:translate-x-1 transition-transform">
                                     <span className="material-symbols-outlined text-lg">chevron_right</span>
                                 </div>
@@ -115,8 +115,8 @@ export default function AdminOrdersPage() {
                         <div className="space-y-8 max-h-[80vh] overflow-y-auto pb-10 pr-2">
                             <div className="flex justify-between items-start">
                                 <div className="space-y-1">
-                                    <span className="text-xs font-black uppercase text-primary tracking-widest">{selectedOrder.id}</span>
-                                    <h2 className="text-3xl font-black text-on-surface">{selectedOrder.customer}</h2>
+                                    <span className="text-xs font-black uppercase text-primary tracking-widest">{selectedOrder._id}</span>
+                                    <h2 className="text-3xl font-black text-on-surface">{selectedOrder.customerName}</h2>
                                     <p className="text-on-surface-variant font-bold text-lg">{selectedOrder.phone}</p>
                                 </div>
                                 <button 
@@ -160,7 +160,7 @@ export default function AdminOrdersPage() {
                                     {(['Pending', 'Confirmed', 'Ready', 'Delivered'] as OrderStatus[]).map((status) => (
                                         <button
                                             key={status}
-                                            onClick={() => updateStatus(selectedOrder.id, status)}
+                                            onClick={() => updateStatus(selectedOrder._id, status)}
                                             className={`py-4 rounded-2xl font-black transition-all active:scale-95 border-2 ${
                                                 selectedOrder.status === status ? 'bg-primary text-on-primary border-primary' : 'bg-surface-container-low text-on-surface-variant border-transparent hover:border-outline-variant'
                                             }`}
@@ -173,7 +173,7 @@ export default function AdminOrdersPage() {
 
                             <div className="pt-6 border-t border-outline-variant/10 flex justify-between items-center">
                                 <span className="text-on-surface-variant font-bold">Total Amount Due</span>
-                                <span className="text-3xl font-black text-primary">{selectedOrder.total}</span>
+                                <span className="text-3xl font-black text-primary">{selectedOrder.totalAmount}</span>
                             </div>
                         </div>
                     </div>

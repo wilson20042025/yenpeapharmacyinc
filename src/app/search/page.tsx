@@ -123,8 +123,8 @@ export default function SearchPage() {
                         ) : filteredResults.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {filteredResults.map((med) => (
-                                    <div key={med.id} className="bg-surface-container-lowest p-5 rounded-2xl border-l-4 border-primary shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-                                        <Link href={`/medicine/${med.id}`} className="absolute inset-0 z-0" aria-label={`View ${med.name} Details`} />
+                                    <div key={med._id} className="bg-surface-container-lowest p-5 rounded-2xl border-l-4 border-primary shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                                        <Link href={`/medicine/${med._id}`} className="absolute inset-0 z-0" aria-label={`View ${med.name} Details`} />
                                         <div className="flex justify-between items-start relative z-10 pointer-events-none">
                                             <div className="flex-grow pr-4">
                                                 <div className="flex items-center gap-2 mb-1">
@@ -146,7 +146,7 @@ export default function SearchPage() {
                                                 </span>
                                             </div>
                                             <div className="flex gap-2">
-                                                <Link href={`/medicine/${med.id}`} className="px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-[11px] shadow-sm">View Details</Link>
+                                                <Link href={`/medicine/${med._id}`} className="px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-[11px] shadow-sm">View Details</Link>
                                             </div>
                                         </div>
                                     </div>

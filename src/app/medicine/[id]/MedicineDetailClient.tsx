@@ -6,7 +6,7 @@ import SubPageHeader from '@/components/SubPageHeader';
 import MobileNav from '@/components/MobileNav';
 
 type Medicine = {
-    id: string;
+    _id: string;
     name: string;
     price: string;
     category: string;

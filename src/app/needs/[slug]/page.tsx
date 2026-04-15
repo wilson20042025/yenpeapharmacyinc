@@ -1,10 +1,11 @@
-import { getMedicinesByCategory } from '@/lib/api';
+import dbConnect from '@/lib/mongodb';
+import Medicine from '@/lib/models/Medicine';
 import NeedContent from './NeedContent';
 
 export const dynamic = 'force-dynamic';
 
 type Medication = {
-    id: string;
+    _id: string;
     name: string;
     description: string;
     price: string;
@@ -69,8 +70,16 @@ export default async function NeedPage({ params }: { params: Promise<{ slug: str
     
     let medicines: Medication[] = [];
     try {
-        const data = await getMedicinesByCategory(slug);
-        medicines = data as Medication[];
+        await dbConnect();
+        const data = await Medicine.find({ category: slug });
+        medicines = data.map(item => ({
+            _id: item._id.toString(),
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            image: item.image,
+            inStock: item.inStock,
+        }));
     } catch (err) {
         console.error("Error fetching category meds dynamically:", err);
     }

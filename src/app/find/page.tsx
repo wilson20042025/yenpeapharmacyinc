@@ -31,22 +31,22 @@ export default function FindPharmacyPage() {
                         />
                         <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-outline-variant/15 flex items-center gap-2 shadow-sm">
                             <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
-                            <span className="text-xs font-bold text-on-surface">Paynesville, Monrovia</span>
+                            <span className="text-xs font-bold text-on-surface">Chugbor Old Road, Monrovia, Liberia</span>
                         </div>
                     </div>
 
                     <div className="space-y-6">
                         <div>
-                            <h4 className="text-3xl font-black text-primary mb-2">Red Light Branch</h4>
+                            <h4 className="text-3xl font-black text-primary mb-2">Main Branch</h4>
                             <p className="text-on-surface-variant font-semibold flex items-center gap-2">
                                 <span className="material-symbols-outlined text-base">storefront</span>
-                                Near Red Light Market
+                                Chugbor Old Road, Monrovia
                             </p>
                         </div>
 
                         <div className="bg-surface-container-low rounded-2xl p-5 border-l-4 border-primary">
                             <p className="text-xs font-black text-primary mb-1 uppercase tracking-widest">Directions</p>
-                            <p className="text-on-surface leading-relaxed font-medium">From Red Light, walk 2 minutes toward the main road, next to the Total Energies station.</p>
+                            <p className="text-on-surface leading-relaxed font-medium">Located on Chugbor Old Road in Monrovia, Liberia. Easily accessible from the main road.</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -62,12 +62,12 @@ export default function FindPharmacyPage() {
 
                         {/* Action Buttons Cluster */}
                         <div className="space-y-4 pt-2">
-                            <a className="flex items-center justify-center gap-3 bg-primary text-on-primary py-6 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all" href="tel:#">
+                            <a className="flex items-center justify-center gap-3 bg-primary text-on-primary py-6 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all" href="tel:0773678742">
                                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>call</span>
                                 Call Pharmacy
                             </a>
                             <div className="grid grid-cols-2 gap-4">
-                                <a className="flex items-center justify-center gap-2 bg-secondary-container text-on-secondary-container py-5 rounded-2xl font-bold active:scale-95 transition-all text-sm" href="https://wa.me/231889143013?text=Hello Yenpea Group Inc., I am looking for your branch directions.">
+                                    <a className="flex items-center justify-center gap-2 bg-secondary-container text-on-secondary-container py-5 rounded-2xl font-bold active:scale-95 transition-all text-sm" href="https://wa.me/0773678742?text=Hello Yenpea Group Inc., I am looking for your branch directions.">
                                     <span className="material-symbols-outlined text-lg">chat</span>
                                     WhatsApp
                                 </a>

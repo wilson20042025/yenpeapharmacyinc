@@ -1,9 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { getMedicines } from '@/lib/api';
+import dbConnect from '@/lib/mongodb';
+import Medicine from '@/lib/models/Medicine';
 
 type Medicine = {
-    id: string;
+    _id: string;
     name: string;
     category: string;
     price: string;
@@ -13,9 +14,15 @@ type Medicine = {
 const PopularMedicines = async () => {
     let meds: Medicine[] = [];
     try {
-        const data = await getMedicines();
-        // Take only first 4 for popular section
-        meds = data.slice(0, 4) as Medicine[];
+        await dbConnect();
+        const data = await Medicine.find().limit(4);
+        meds = data.map(item => ({
+            _id: item._id.toString(),
+            name: item.name,
+            category: item.category,
+            price: item.price,
+            image: item.image,
+        }));
     } catch (err) {
         console.error("Error fetching popular medicines:", err);
     }
@@ -28,8 +35,8 @@ const PopularMedicines = async () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {meds.map((med) => (
                     <Link 
-                        key={med.id} 
-                        href={`/medicine/${med.id}`}
+                        key={med._id} 
+                        href={`/medicine/${med._id}`}
                         className="bg-surface-container-lowest rounded-[1.5rem] p-4 flex items-center gap-4 border border-outline-variant/10 shadow-sm active:bg-secondary-container transition-all"
                     >
                         <div className="w-24 h-24 rounded-2xl bg-surface-container overflow-hidden shrink-0">

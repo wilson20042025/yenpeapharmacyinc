@@ -6,7 +6,7 @@ import MobileNav from '@/components/MobileNav';
 import Link from 'next/link';
 
 type Medication = {
-    id: string;
+    _id: string;
     name: string;
     description: string;
     price: string;
@@ -65,7 +65,7 @@ export default function NeedContent({
                     <h3 className="text-xl md:text-2xl font-black text-on-surface font-lexend">Available Medications</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {medicines.length > 0 ? medicines.map((med) => (
-                            <div key={med.id} className="bg-white p-5 rounded-2xl border border-outline-variant/10 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                            <div key={med._id} className="bg-white p-5 rounded-2xl border border-outline-variant/10 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
                                 {med.prescription && (
                                     <div className="absolute top-0 right-0 bg-error-container text-on-error-container text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-tighter">
                                         Prescription Required
@@ -73,7 +73,7 @@ export default function NeedContent({
                                 )}
                                 <div className="flex gap-4 relative">
                                     <Link
-                                        href={`/medicine/${med.id}`}
+                                        href={`/medicine/${med._id}`}
                                         className="absolute inset-0 z-10"
                                         aria-label={`View details for ${med.name}`}
                                     ></Link>

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLoginPage() {
@@ -16,21 +15,13 @@ export default function AdminLoginPage() {
         setLoading(true);
         setError(null);
 
-        try {
-            const { error: authError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-
-            if (authError) throw authError;
-
+        // Simple check for demo
+        if (email === 'admin@example.com' && password === 'password') {
             router.push('/admin');
-            router.refresh();
-        } catch (err: any) {
-            setError(err.message || 'Failed to sign in');
-        } finally {
-            setLoading(false);
+        } else {
+            setError('Invalid credentials');
         }
+        setLoading(false);
     };
 
     return (

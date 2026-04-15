@@ -1,219 +1,251 @@
-import { supabase } from "./supabase";
-
 // --- TYPES ---
 
-export interface MedicineRow {
-    id: string;
+export interface Medicine {
+    _id: string;
     name: string;
     price: string;
     image: string;
     category: string;
-    in_stock: boolean;
+    inStock: boolean;
     description: string;
     usage: string;
-    side_effects: string;
-    created_at: string;
+    sideEffects: string;
+    createdAt: string;
 }
 
-export interface OrderRow {
-    id: string;
-    customer_name: string;
+export interface Order {
+    _id: string;
+    customerName: string;
     phone: string;
     location: string;
     medicines: string[];
-    total_amount: string;
+    totalAmount: string;
     status: string;
-    created_at: string;
+    createdAt: string;
 }
 
 // --- MEDICINES ---
 
-export const getMedicines = async () => {
-    const { data, error } = await supabase
-        .from('medicines')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.warn("Supabase Fetch Warning (getMedicines):", error.message);
+export const getMedicines = async (): Promise<Medicine[]> => {
+    try {
+        const response = await fetch('/api/medicines');
+        if (!response.ok) throw new Error('Failed to fetch medicines');
+        const data = await response.json();
+        return data.map((item: any) => ({
+            _id: item._id,
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            category: item.category,
+            inStock: item.inStock,
+            description: item.description,
+            usage: item.usage,
+            sideEffects: item.sideEffects,
+            createdAt: item.createdAt
+        }));
+    } catch (error) {
+        console.error('Error fetching medicines:', error);
         return [];
     }
-
-    const rows = (data || []) as MedicineRow[];
-
-    return rows.map((item: MedicineRow) => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-        category: item.category,
-        inStock: item.in_stock,
-        description: item.description,
-        usage: item.usage,
-        sideEffects: item.side_effects,
-        createdAt: item.created_at
-    }));
 };
 
-export const getMedicinesByCategory = async (category: string) => {
-    const { data, error } = await supabase
-        .from('medicines')
-        .select('*')
-        .eq('category', category)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.warn("Supabase Fetch Warning (getMedicinesByCategory):", error.message);
+export const getMedicinesByCategory = async (category: string): Promise<Medicine[]> => {
+    try {
+        const response = await fetch(`/api/medicines?category=${encodeURIComponent(category)}`);
+        if (!response.ok) throw new Error('Failed to fetch medicines by category');
+        const data = await response.json();
+        return data.map((item: any) => ({
+            _id: item._id,
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            image: item.image,
+            inStock: item.inStock
+        }));
+    } catch (error) {
+        console.error('Error fetching medicines by category:', error);
         return [];
     }
-
-    const rows = (data || []) as MedicineRow[];
-
-    return rows.map((item: MedicineRow) => ({
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        price: item.price,
-        image: item.image,
-        inStock: item.in_stock
-    }));
 };
 
-export const getMedicineById = async (id: string) => {
-    const { data, error } = await supabase
-        .from('medicines')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-    if (error || !data) {
-        console.error("Supabase Error (getMedicineById):", error || "No data found");
+export const getMedicineById = async (id: string): Promise<Medicine | null> => {
+    try {
+        const response = await fetch(`/api/medicines/${id}`);
+        if (!response.ok) {
+            if (response.status === 404) return null;
+            throw new Error('Failed to fetch medicine');
+        }
+        const item = await response.json();
+        return {
+            _id: item._id,
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            category: item.category,
+            inStock: item.inStock,
+            description: item.description,
+            usage: item.usage,
+            sideEffects: item.sideEffects,
+            createdAt: item.createdAt
+        };
+    } catch (error) {
+        console.error('Error fetching medicine by id:', error);
         return null;
     }
-
-    const item = data as MedicineRow;
-
-    return {
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-        category: item.category,
-        inStock: item.in_stock,
-        description: item.description,
-        usage: item.usage,
-        sideEffects: item.side_effects,
-        createdAt: item.created_at
-    };
 };
 
-export const addMedicine = async (medicine: any) => {
-    const { data, error } = await supabase
-        .from('medicines')
-        .insert([{
-            name: medicine.name,
-            price: medicine.price,
-            category: medicine.category,
-            description: medicine.description,
-            usage: medicine.usage,
-            side_effects: medicine.sideEffects,
-            image: medicine.image,
-            in_stock: true
-        }])
-        .select()
-        .single();
-
-    if (error || !data) {
-        console.error("Supabase Error (addMedicine):", error || "Row inserted but could not be retrieved. Check your RLS SELECT policies.");
-        throw new Error(error?.message || "Failed to retrieve the new medicine record. Please refresh the page.");
+export const addMedicine = async (medicine: Omit<Medicine, '_id' | 'createdAt'>): Promise<Medicine> => {
+    try {
+        const response = await fetch('/api/medicines', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: medicine.name,
+                price: medicine.price,
+                category: medicine.category,
+                description: medicine.description,
+                usage: medicine.usage,
+                sideEffects: medicine.sideEffects,
+                image: medicine.image,
+                inStock: true
+            })
+        });
+        if (!response.ok) throw new Error('Failed to add medicine');
+        return await response.json();
+    } catch (error) {
+        console.error('Error adding medicine:', error);
+        throw error;
     }
-    return data;
 };
 
-export const updateMedicine = async (id: string, updates: any) => {
-    const dbUpdates: any = {};
-    if (updates.name !== undefined) dbUpdates.name = updates.name;
-    if (updates.price !== undefined) dbUpdates.price = updates.price;
-    if (updates.category !== undefined) dbUpdates.category = updates.category;
-    if (updates.description !== undefined) dbUpdates.description = updates.description;
-    if (updates.usage !== undefined) dbUpdates.usage = updates.usage;
-    if (updates.sideEffects !== undefined) dbUpdates.side_effects = updates.sideEffects;
-    if (updates.image !== undefined) dbUpdates.image = updates.image;
-    if (updates.inStock !== undefined) dbUpdates.in_stock = updates.inStock;
-
-    const { data, error } = await supabase
-        .from('medicines')
-        .update(dbUpdates)
-        .eq('id', id)
-        .select()
-        .single();
-
-    if (error || !data) {
-        console.error("Supabase Error (updateMedicine):", error || "Row updated but could not be retrieved. Check your RLS SELECT policies.");
-        throw new Error(error?.message || "Failed to retrieve the updated medicine record.");
+export const updateMedicine = async (id: string, updates: Partial<Medicine>): Promise<Medicine> => {
+    try {
+        const response = await fetch(`/api/medicines/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updates)
+        });
+        if (!response.ok) throw new Error('Failed to update medicine');
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating medicine:', error);
+        throw error;
     }
-    return data;
+};
+
+export const deleteMedicine = async (id: string): Promise<void> => {
+    try {
+        const response = await fetch(`/api/medicines/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Failed to delete medicine');
+    } catch (error) {
+        console.error('Error deleting medicine:', error);
+        throw error;
+    }
 };
 
 // --- ORDERS ---
 
-export const createOrder = async (orderData: any) => {
-    const { data, error } = await supabase
-        .from('orders')
-        .insert([{
-            customer_name: orderData.customerName,
-            phone: orderData.phone,
-            location: orderData.location,
-            medicines: orderData.medicines,
-            total_amount: orderData.total,
-            status: "Pending"
-        }])
-        .select()
-        .single();
-
-    if (error || !data) {
-        console.error("Supabase Error (createOrder):", error || "Order created but could not be retrieved.");
-        throw new Error(error?.message || "Failed to retrieve the new order record.");
-    }
-    return data;
-};
-
-export const getOrders = async () => {
-    const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error("Supabase Error (getOrders):", error);
+export const getOrders = async (): Promise<Order[]> => {
+    try {
+        const response = await fetch('/api/orders');
+        if (!response.ok) throw new Error('Failed to fetch orders');
+        const data = await response.json();
+        return data.map((item: any) => ({
+            _id: item._id,
+            customerName: item.customerName,
+            phone: item.phone,
+            location: item.location,
+            medicines: item.medicines,
+            totalAmount: item.totalAmount,
+            status: item.status,
+            createdAt: item.createdAt
+        }));
+    } catch (error) {
+        console.error('Error fetching orders:', error);
         return [];
     }
+};
 
-    const rows = (data || []) as OrderRow[];
+export const getOrderById = async (id: string): Promise<Order | null> => {
+    try {
+        const response = await fetch(`/api/orders/${id}`);
+        if (!response.ok) {
+            if (response.status === 404) return null;
+            throw new Error('Failed to fetch order');
+        }
+        const item = await response.json();
+        return {
+            _id: item._id,
+            customerName: item.customerName,
+            phone: item.phone,
+            location: item.location,
+            medicines: item.medicines,
+            totalAmount: item.totalAmount,
+            status: item.status,
+            createdAt: item.createdAt
+        };
+    } catch (error) {
+        console.error('Error fetching order by id:', error);
+        return null;
+    }
+};
 
-    return rows.map((item: OrderRow) => ({
-        id: item.id,
-        customer: item.customer_name,
-        phone: item.phone,
-        location: item.location,
-        medicines: item.medicines,
-        total: item.total_amount,
-        status: item.status,
-        time: item.created_at
-    }));
+export const addOrder = async (order: Omit<Order, '_id' | 'createdAt'>): Promise<Order> => {
+    try {
+        const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(order)
+        });
+        if (!response.ok) throw new Error('Failed to add order');
+        return await response.json();
+    } catch (error) {
+        console.error('Error adding order:', error);
+        throw error;
+    }
+};
+
+export const updateOrder = async (id: string, updates: Partial<Order>): Promise<Order> => {
+    try {
+        const response = await fetch(`/api/orders/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updates)
+        });
+        if (!response.ok) throw new Error('Failed to update order');
+        return await response.json();
+    } catch (error) {
+        console.error('Error updating order:', error);
+        throw error;
+    }
+};
+
+export const deleteOrder = async (id: string): Promise<void> => {
+    try {
+        const response = await fetch(`/api/orders/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Failed to delete order');
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        throw error;
+    }
+};
+
+// Legacy functions for compatibility
+export const createOrder = async (orderData: any) => {
+    return await addOrder({
+        customerName: orderData.customerName,
+        phone: orderData.phone,
+        location: orderData.location,
+        medicines: orderData.medicines,
+        totalAmount: orderData.total,
+        status: "Pending"
+    });
 };
 
 export const updateOrderStatus = async (id: string, status: string) => {
-    const { data, error } = await supabase
-        .from('orders')
-        .update({ status })
-        .eq('id', id)
-        .select()
-        .single();
-
-    if (error) {
-        console.error("Supabase Error (updateOrderStatus):", error);
-        throw error;
-    }
-    return data;
+    return await updateOrder(id, { status });
 };

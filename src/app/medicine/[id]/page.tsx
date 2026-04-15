@@ -1,10 +1,11 @@
-import { getMedicineById } from '@/lib/api';
+import dbConnect from '@/lib/mongodb';
+import Medicine from '@/lib/models/Medicine';
 import MedicineDetailContent from './MedicineDetailClient';
 
 export const dynamic = 'force-dynamic';
 
 type Medicine = {
-    id: string;
+    _id: string;
     name: string;
     price: string;
     category: string;
@@ -20,9 +21,20 @@ export default async function MedicineDetailPage({ params }: { params: Promise<{
     
     let medicine: Medicine | null = null;
     try {
-        const data = await getMedicineById(id);
+        await dbConnect();
+        const data = await Medicine.findById(id);
         if (data) {
-            medicine = data as Medicine;
+            medicine = {
+                _id: data._id.toString(),
+                name: data.name,
+                price: data.price,
+                category: data.category,
+                image: data.image,
+                description: data.description,
+                usage: data.usage,
+                sideEffects: data.sideEffects,
+                inStock: data.inStock,
+            };
         }
     } catch (err) {
         console.error("Error fetching medicine dynamically:", err);
