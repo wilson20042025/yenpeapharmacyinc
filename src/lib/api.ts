@@ -123,9 +123,9 @@ export const addMedicine = async (medicine: any) => {
         .select()
         .single();
 
-    if (error) {
-        console.error("Supabase Error (addMedicine):", error);
-        throw error;
+    if (error || !data) {
+        console.error("Supabase Error (addMedicine):", error || "Row inserted but could not be retrieved. Check your RLS SELECT policies.");
+        throw new Error(error?.message || "Failed to retrieve the new medicine record. Please refresh the page.");
     }
     return data;
 };
@@ -148,9 +148,9 @@ export const updateMedicine = async (id: string, updates: any) => {
         .select()
         .single();
 
-    if (error) {
-        console.error("Supabase Error (updateMedicine):", error);
-        throw error;
+    if (error || !data) {
+        console.error("Supabase Error (updateMedicine):", error || "Row updated but could not be retrieved. Check your RLS SELECT policies.");
+        throw new Error(error?.message || "Failed to retrieve the updated medicine record.");
     }
     return data;
 };
@@ -171,9 +171,9 @@ export const createOrder = async (orderData: any) => {
         .select()
         .single();
 
-    if (error) {
-        console.error("Supabase Error (createOrder):", error);
-        throw error;
+    if (error || !data) {
+        console.error("Supabase Error (createOrder):", error || "Order created but could not be retrieved.");
+        throw new Error(error?.message || "Failed to retrieve the new order record.");
     }
     return data;
 };

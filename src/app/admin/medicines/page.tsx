@@ -49,7 +49,7 @@ export default function AdminMedicinesPage() {
                 const data = await getMedicines();
                 setMedicines(data as Medicine[]);
             } catch (err) {
-                console.error("Firebase fetch error:", err);
+                console.error("Supabase fetch error:", err);
             } finally {
                 setLoading(false);
             }
@@ -65,7 +65,7 @@ export default function AdminMedicinesPage() {
             await updateMedicine(id, { inStock: !med.inStock });
             setMedicines(prev => prev.map(m => m.id === id ? { ...m, inStock: !med.inStock } : m));
         } catch (err) {
-            alert("Failed to update stock in Firebase");
+            alert("Failed to update stock in Supabase");
         }
     };
 
@@ -107,7 +107,7 @@ export default function AdminMedicinesPage() {
             let imageUrl = editingMed ? editingMed.image : "https://lh3.googleusercontent.com/aida-public/AB6AXuDAL60E-nnXq8QenCwHLNDn5DQQhvtfLsBhStaZV5l_S31jaw2Y3xL9G-41ss5W1k64ztResdDW-cX1i-KvHn06TgM0_a2bk-aspubOPgvJZqZtejDuqrCakhxd3ytvBPaGxyuqKJ6M2Nb7lyi3ZxH0Vv4NIeV94UGOmVHfvXMPa453SbLZnP5zxzCiMxIowB_xP_j8LPVxLnH1IY2PKiTgCsjpEARCvNjqf0T2_-g-5OjWkve2P_wTG8A2pmlUcOMJfKL8-szS-fk";
 
             if (selectedFile) {
-                // Future: Add real Firebase Storage upload here
+                // Future: Add real Supabase Storage upload here
                 imageUrl = URL.createObjectURL(selectedFile);
             }
 
